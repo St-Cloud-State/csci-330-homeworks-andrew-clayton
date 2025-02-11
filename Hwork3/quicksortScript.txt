@@ -1,0 +1,76 @@
+Script started on 2025-02-11 10:51:09-06:00 [TERM="xterm-256color" TTY="/dev/pts/7" COLUMNS="155" LINES="34"]
+[?2004h]0;andrewclayton@AC2002D24: ~/csci330/csci-330-homeworks-andrew-clayton/Hwork3[01;32mandrewclayton@AC2002D24[00m:[01;34m~/csci330/csci-330-homeworks-andrew-clayton/Hwork3[00m$ cat quicksort.s[Kcpp
+[?2004l#include <iostream>
+#include <vector>
+#include <stack>
+#include <utility>
+
+int partition(std::vector<int>& arr, int low, int high) {
+    int pivot = arr[high]; // Choose rightmost element as pivot
+    int i = (low - 1); // index of 'high' element, the last element that is smaller than our pivot
+
+    // Iterate over subarray to ensure elements are properly partitioned, swapping as needed
+    for (int j = low; j <= high - 1; j++) {
+        if (arr[j] < pivot) {
+            i++;
+            std::swap(arr[i], arr[j]);
+        }
+    }
+
+    std::swap(arr[i+1], arr[high]);
+    return (i + 1);
+}
+
+std::vector<int> quicksort(std::vector<int>& nums) {
+    if (nums.empty() || nums.size() <= 1) {
+        return nums; // Already sorted or empty
+    }
+
+    std::stack<std::pair<int, int>> stack; // The pair will be the start and end indices of each range
+    stack.push({0, static_cast<int>(nums.size() - 1)}); // Push initial range (start, end)
+
+    while (!stack.empty()) {
+        std::pair<int, int> range = stack.top();
+        stack.pop();
+
+        int low = range.first;
+        int high = range.second;
+
+        if (low < high) {
+            int partitionIndex = partition(nums, low, high);
+
+            // Push sub-array ranges onto the stack
+            stack.push({partitionIndex + 1, high}); // right sub-array
+            stack.push({low, partitionIndex-1});
+        }
+    }
+
+    return nums;
+}
+
+int main() {
+    std::vector<int> unsortedArray = {7, 2, 1, 6, 8, 5, 3, 4, 9}; // Define a test array
+
+    std::cout << "Unsorted array: "; // Output label
+    for (int val : unsortedArray) { // Loop through and print each value in unsortedArray
+        std::cout << val << " ";
+    }
+    std::cout << std::endl; // Newline after printing array
+
+    std::vector<int> sortedArray = quicksort(unsortedArray); // Call the quicksort function
+
+    std::cout << "Sorted array: ";
+    for (int val : sortedArray) { // Loop through and print each value in sortedArray
+        std::cout << val << " ";
+    }
+    std::cout << std::endl; // Newline after printing array
+
+    return 0; // Indicate successful program execution
+}[?2004h]0;andrewclayton@AC2002D24: ~/csci330/csci-330-homeworks-andrew-clayton/Hwork3[01;32mandrewclayton@AC2002D24[00m:[01;34m~/csci330/csci-330-homeworks-andrew-clayton/Hwork3[00m$ j[Kg++ quicksort.cpp -o quicksort
+[?2004l[?2004h]0;andrewclayton@AC2002D24: ~/csci330/csci-330-homeworks-andrew-clayton/Hwork3[01;32mandrewclayton@AC2002D24[00m:[01;34m~/csci330/csci-330-homeworks-andrew-clayton/Hwork3[00m$ ./quicksort
+[?2004lUnsorted array: 7 2 1 6 8 5 3 4 9 
+Sorted array: 1 2 3 4 5 6 7 8 9 
+[?2004h]0;andrewclayton@AC2002D24: ~/csci330/csci-330-homeworks-andrew-clayton/Hwork3[01;32mandrewclayton@AC2002D24[00m:[01;34m~/csci330/csci-330-homeworks-andrew-clayton/Hwork3[00m$ exit
+[?2004lexit
+
+Script done on 2025-02-11 10:51:28-06:00 [COMMAND_EXIT_CODE="0"]

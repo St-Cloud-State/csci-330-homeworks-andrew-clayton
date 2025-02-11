@@ -1,0 +1,84 @@
+Script started on 2025-02-11 10:52:07-06:00 [TERM="xterm-256color" TTY="/dev/pts/7" COLUMNS="155" LINES="34"]
+[?2004h]0;andrewclayton@AC2002D24: ~/csci330/csci-330-homeworks-andrew-clayton/Hwork3[01;32mandrewclayton@AC2002D24[00m:[01;34m~/csci330/csci-330-homeworks-andrew-clayton/Hwork3[00m$ cat bottom_[K-p[Kup_mergeosrt[K[K[K[Ksort.lisp
+[?2004l;;;; Bottom-Up Mergesort in Lisp 
+;; Step 3a: Partition the list into sorted pairs
+(defun partitionIntoPairs (listToPartition)
+  (let ((pairs ()))
+    (loop while listToPartition
+          do (let ((firstItem (car listToPartition)))
+               (setf listToPartition (cdr listToPartition))
+               (if listToPartition
+                   (let ((secondItem (car listToPartition)))
+                     (setf listToPartition (cdr listToPartition))
+                     (setf pairs (append pairs (list (sort (list firstItem secondItem) '<)))))
+                   (setf pairs (append pairs (list (list firstItem)))))
+             )
+        )
+    pairs
+    )
+)
+
+;; Step 3c (Adapted from Question 2): Merge two sorted lists
+(defun mergeLists (leftList rightList)
+  (let ((mergedList ()))
+    (loop while (and leftList rightList)
+          do (if (<= (car leftList) (car rightList))
+                 (progn
+                   (setf mergedList (append mergedList (list (car leftList))))
+                   (setf leftList (cdr leftList))
+                 )
+                 (progn
+                   (setf mergedList (append mergedList (list (car rightList))))
+                   (setf rightList (cdr rightList))
+                 )
+            )
+    )
+    (append mergedList leftList rightList))
+)
+
+;; Step 3b: In each pass, merge adjacent lists
+(defun mergeAdjacentListsPass (listOfLists)
+  (let ((mergedLists ()))
+    (loop while listOfLists
+          do (let ((firstList (car listOfLists)))
+               (setf listOfLists (cdr listOfLists))
+               (if listOfLists
+                   (let ((secondList (car listOfLists)))
+                     (setf listOfLists (cdr listOfLists))
+                     (setf mergedLists (append mergedLists (list (mergeLists firstList secondList)))))
+                   (setf mergedLists (append mergedLists (list firstList))))
+            )
+        )
+    mergedLists
+    )
+)
+
+;; Step 3d: Combine into bottomUpMergesort
+(defun bottomUpMergesort (nums)
+  (let ((current-listOfLists (partitionIntoPairs nums)))
+    (loop while (> (length current-listOfLists) 1)
+          do (setf current-listOfLists (mergeAdjacentListsPass current-listOfLists)))
+    (car current-listOfLists)
+    )
+)
+
+;; Test code
+(let ((testArray (list 1 7 7 2 12 8 6 5 -3 9 4)))
+  (format t "Original array: ~a~%" testArray)
+  (let ((sortedArray (bottomUpMergesort testArray)))
+    (format t "Sorted array: ~a~%" sortedArray)))
+
+(quit)[?2004h]0;andrewclayton@AC2002D24: ~/csci330/csci-330-homeworks-andrew-clayton/Hwork3[01;32mandrewclayton@AC2002D24[00m:[01;34m~/csci330/csci-330-homeworks-andrew-clayton/Hwork3[00m$ sbcl --load bottom-up_mergesort.lisp
+[?2004lThis is SBCL 1.4.3, an implementation of ANSI Common Lisp.
+More information about SBCL is available at <http://www.sbcl.org/>.
+
+SBCL is free software, provided as is, with absolutely no warranty.
+It is mostly in the public domain; some portions are provided under
+BSD-style licenses.  See the CREDITS and COPYING files in the
+distribution for more information.
+Original array: (1 7 7 2 12 8 6 5 -3 9 4)
+Sorted array: (-3 1 2 4 5 6 7 7 8 9 12)
+[?2004h]0;andrewclayton@AC2002D24: ~/csci330/csci-330-homeworks-andrew-clayton/Hwork3[01;32mandrewclayton@AC2002D24[00m:[01;34m~/csci330/csci-330-homeworks-andrew-clayton/Hwork3[00m$ exit
+[?2004lexit
+
+Script done on 2025-02-11 10:52:25-06:00 [COMMAND_EXIT_CODE="0"]
